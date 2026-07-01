@@ -59,7 +59,7 @@ Built to solve key challenges faced by IT consultants:
 
 ```bash
 # Clone repository
-git clone https://github.com/aditya-lucis/diary-of-aditya.git
+git clone https://github.com/aditya-lucis/diary_of_aditya.git
 cd diary-of-aditya
 
 # Backend
