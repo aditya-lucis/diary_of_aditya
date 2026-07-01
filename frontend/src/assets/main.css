@@ -1,0 +1,191 @@
+@import "tailwindcss";
+
+/* Custom Theme - Diary Of Aditya */
+@theme {
+  /* Primary Colors - Navy & Gold */
+  --color-navy-950: #020617;
+  --color-navy-900: #0f172a;
+  --color-navy-800: #1e293b;
+  --color-navy-700: #334155;
+  
+  --color-gold-300: #fcd34d;
+  --color-gold-400: #fbbf24;
+  --color-gold-500: #f59e0b;
+  --color-gold-600: #d97706;
+  
+  /* Accent Colors */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  
+  /* Success & Status */
+  --color-success-500: #10b981;
+  --color-warning-500: #f59e0b;
+  --color-danger-500: #ef4444;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  --gradient-gold: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  --gradient-hero: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+  
+  /* Shadows */
+  --shadow-glow: 0 0 40px rgba(251, 191, 36, 0.15);
+  --shadow-card: 0 10px 40px rgba(0, 0, 0, 0.1);
+  --shadow-elevated: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+/* Base Styles */
+* {
+  @apply antialiased;
+}
+
+body {
+  @apply bg-navy-950 text-gray-100 font-sans;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-navy-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-navy-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-navy-600;
+}
+
+/* Glass Morphism */
+.glass {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10;
+}
+
+.glass-card {
+  @apply bg-navy-800/50 backdrop-blur-xl border border-white/5 shadow-xl;
+}
+
+/* Gradient Text */
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-gold-400 to-gold-600;
+}
+
+.text-gradient-primary {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-primary-700;
+}
+
+/* Button Styles */
+.btn-primary {
+  @apply px-6 py-3 bg-gradient-to-r from-gold-500 to-gold-600 
+         text-navy-950 font-semibold rounded-xl
+         hover:from-gold-400 hover:to-gold-500 
+         transform hover:scale-105 transition-all duration-200
+         shadow-lg hover:shadow-glow;
+}
+
+.btn-secondary {
+  @apply px-6 py-3 bg-navy-800 border-2 border-gold-500/30 
+         text-gold-400 font-semibold rounded-xl
+         hover:bg-navy-700 hover:border-gold-400
+         transform hover:scale-105 transition-all duration-200;
+}
+
+.btn-ghost {
+  @apply px-4 py-2 text-gray-300 hover:text-gold-400 
+         hover:bg-white/5 rounded-lg transition-all duration-200;
+}
+
+/* Card Styles */
+.card-modern {
+  @apply glass-card rounded-2xl p-6 
+         hover:shadow-2xl hover:shadow-gold-500/5 
+         transition-all duration-300;
+}
+
+/* Input Styles */
+.input-modern {
+  @apply w-full px-4 py-3 bg-navy-900/80 border border-white/10 
+         rounded-xl text-gray-100 placeholder-gray-500
+         focus:outline-none focus:ring-2 focus:ring-gold-500/50 
+         focus:border-gold-500/50 transition-all duration-200;
+}
+
+/* Animation Classes */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(251, 191, 36, 0.4); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.5s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Responsive Utilities */
+@media (max-width: 640px) {
+  .mobile-hide {
+    @apply hidden;
+  }
+  
+  .mobile-full {
+    @apply w-full;
+  }
+}
+
+@media (min-width: 768px) {
+  .tablet-grid {
+    @apply grid-cols-2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .desktop-grid {
+    @apply grid-cols-4;
+  }
+}
+
+/* Status Badges */
+.badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+}
+
+.badge-success {
+  @apply bg-success-500/20 text-success-500 border border-success-500/30;
+}
+
+.badge-warning {
+  @apply bg-warning-500/20 text-warning-500 border border-warning-500/30;
+}
+
+.badge-danger {
+  @apply bg-danger-500/20 text-danger-500 border border-danger-500/30;
+}
+
+.badge-info {
+  @apply bg-primary-500/20 text-primary-500 border border-primary-500/30;
+}
