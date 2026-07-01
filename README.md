@@ -1,6 +1,8 @@
 # Diary Of Aditya
 
-![Diary Of Aditya Logo](assets/logo.png)
+<div align="center">
+  <img src="https://github.com/aditya-lucis/diary_of_aditya/blob/main/frontend/public/doa_logo.jpg" alt="Diary Of Aditya Logo" width="400" />
+</div>
 
 **IT Consultant Management System**  
 *Integrated platform for CRM, Project Management, Timesheet, and Invoicing*
@@ -57,7 +59,7 @@ Built to solve key challenges faced by IT consultants:
 
 ```bash
 # Clone repository
-git clone https://github.com/aditya-lucis/diary-of-aditya.git
+git clone https://github.com/aditya-lucis/diary_of_aditya.git
 cd diary-of-aditya
 
 # Backend
