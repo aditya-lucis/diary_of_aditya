@@ -1,0 +1,2144 @@
+openapi: 3.0.3
+info:
+  title: Diary Of Aditya - IT Consultant Management System API
+  description: |
+    RESTful API untuk sistem manajemen konsultan IT "Diary Of Aditya" yang mengintegrasikan
+    CRM, manajemen proyek, timesheet, invoicing, dan analitik profitabilitas.
+  version: 1.0.0
+  contact:
+    name: IT Consultant/Enterprise Specialist
+    email: aditya@example.com
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Development server
+  - url: https://api.diaryofaditya.com/v1
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: JWT token management
+  - name: Master Services
+    description: Service catalog management
+  - name: Master Resources
+    description: Team and role management
+  - name: Clients
+    description: Client and lead management
+  - name: Projects
+    description: Project management
+  - name: Milestones
+    description: Project milestone management
+  - name: Tasks
+    description: Task and WBS management
+  - name: Timesheets
+    description: Daily diary and timesheet logging
+  - name: Issues
+    description: Bug and issue tracking
+  - name: Invoices
+    description: Financial invoicing
+  - name: Expenses
+    description: Project expense tracking
+  - name: Dashboard
+    description: Analytics and reporting
+
+security:
+  - BearerAuth: []
+
+paths:
+  # ==================== AUTHENTICATION ====================
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user and return JWT token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: admin@diaryofaditya.com
+                password:
+                  type: string
+                  format: password
+                  example: securepassword123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  expires_at:
+                    type: string
+                    format: date-time
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Invalid credentials
+
+  # ==================== MASTER SERVICES ====================
+  /services:
+    get:
+      tags:
+        - Master Services
+      summary: List all services
+      parameters:
+        - name: billing_method
+          in: query
+          schema:
+            type: string
+            enum: [Hourly, Fixed, Retainer]
+      responses:
+        '200':
+          description: List of services
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Service'
+    post:
+      tags:
+        - Master Services
+      summary: Create new service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceCreate'
+      responses:
+        '201':
+          description: Service created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+
+  /services/{id}:
+    get:
+      tags:
+        - Master Services
+      summary: Get service by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Service details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+    put:
+      tags:
+        - Master Services
+      summary: Update service
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceCreate'
+      responses:
+        '200':
+          description: Service updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+    delete:
+      tags:
+        - Master Services
+      summary: Delete service
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Service deleted
+
+  # ==================== MASTER RESOURCES ====================
+  /resources:
+    get:
+      tags:
+        - Master Resources
+      summary: List all resources
+      parameters:
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [PM, Backend, Frontend, UI, UX, QA]
+        - name: is_active
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of resources
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Resource'
+    post:
+      tags:
+        - Master Resources
+      summary: Create new resource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceCreate'
+      responses:
+        '201':
+          description: Resource created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+
+  /resources/{id}:
+    get:
+      tags:
+        - Master Resources
+      summary: Get resource by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Resource details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+    put:
+      tags:
+        - Master Resources
+      summary: Update resource
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceCreate'
+      responses:
+        '200':
+          description: Resource updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+    delete:
+      tags:
+        - Master Resources
+      summary: Delete resource
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Resource deleted
+
+  # ==================== CLIENTS ====================
+  /clients:
+    get:
+      tags:
+        - Clients
+      summary: List all clients
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [Lead, Active, Inactive]
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of clients
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Client'
+    post:
+      tags:
+        - Clients
+      summary: Create new client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientCreate'
+      responses:
+        '201':
+          description: Client created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+
+  /clients/{id}:
+    get:
+      tags:
+        - Clients
+      summary: Get client by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Client details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+    put:
+      tags:
+        - Clients
+      summary: Update client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientCreate'
+      responses:
+        '200':
+          description: Client updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+    delete:
+      tags:
+        - Clients
+      summary: Delete client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Client deleted
+
+  # ==================== PROJECTS ====================
+  /projects:
+    get:
+      tags:
+        - Projects
+      summary: List all projects
+      parameters:
+        - name: client_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [Draft, In Progress, On Hold, UAT, Completed, Cancelled]
+        - name: complexity
+          in: query
+          schema:
+            type: string
+            enum: [Low, Medium, High]
+      responses:
+        '200':
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+    post:
+      tags:
+        - Projects
+      summary: Create new project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCreate'
+      responses:
+        '201':
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+
+  /projects/{id}:
+    get:
+      tags:
+        - Projects
+      summary: Get project by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+    put:
+      tags:
+        - Projects
+      summary: Update project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCreate'
+      responses:
+        '200':
+          description: Project updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+    delete:
+      tags:
+        - Projects
+      summary: Delete project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Project deleted
+
+  /projects/{id}/complexity:
+    post:
+      tags:
+        - Projects
+      summary: Calculate project complexity
+      description: Calculate complexity score based on architecture, integrations, and security level
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                architecture_score:
+                  type: string
+                  enum: [Low, Medium, High]
+                integration_score:
+                  type: string
+                  enum: [Low, Medium, High]
+                security_score:
+                  type: string
+                  enum: [Low, Medium, High]
+      responses:
+        '200':
+          description: Complexity calculated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_score:
+                    type: number
+                    format: float
+                  complexity_level:
+                    type: string
+                    enum: [Low, Medium, High]
+                  risk_buffer_percentage:
+                    type: number
+                    format: float
+
+  /projects/{id}/estimate:
+    post:
+      tags:
+        - Projects
+      summary: Generate project estimate (BoQ)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                services:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      service_id:
+                        type: string
+                        format: uuid
+                      estimated_man_days:
+                        type: number
+                        format: float
+                third_party_expenses:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      description:
+                        type: string
+                      amount:
+                        type: number
+                        format: float
+      responses:
+        '200':
+          description: Estimate generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_man_days:
+                    type: number
+                    format: float
+                  labor_cost:
+                    type: number
+                    format: float
+                  risk_buffer:
+                    type: number
+                    format: float
+                  third_party_cost:
+                    type: number
+                    format: float
+                  grand_total:
+                    type: number
+                    format: float
+                  quotation_pdf_url:
+                    type: string
+                    format: uri
+
+  # ==================== MILESTONES ====================
+  /projects/{project_id}/milestones:
+    get:
+      tags:
+        - Milestones
+      summary: List milestones for project
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of milestones
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Milestone'
+    post:
+      tags:
+        - Milestones
+      summary: Create new milestone
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MilestoneCreate'
+      responses:
+        '201':
+          description: Milestone created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Milestone'
+
+  /milestones/{id}:
+    get:
+      tags:
+        - Milestones
+      summary: Get milestone by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Milestone details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Milestone'
+    put:
+      tags:
+        - Milestones
+      summary: Update milestone
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MilestoneCreate'
+      responses:
+        '200':
+          description: Milestone updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Milestone'
+    delete:
+      tags:
+        - Milestones
+      summary: Delete milestone
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Milestone deleted
+
+  /milestones/{id}/complete:
+    post:
+      tags:
+        - Milestones
+      summary: Mark milestone as completed
+      description: Automatically generates invoice draft when milestone is completed
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Milestone completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  milestone:
+                    $ref: '#/components/schemas/Milestone'
+                  invoice_generated:
+                    type: boolean
+                  invoice_id:
+                    type: string
+                    format: uuid
+
+  # ==================== TASKS ====================
+  /milestones/{milestone_id}/tasks:
+    get:
+      tags:
+        - Tasks
+      summary: List tasks for milestone
+      parameters:
+        - name: milestone_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [To-Do, In-Progress, In-Review, Done]
+      responses:
+        '200':
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+    post:
+      tags:
+        - Tasks
+      summary: Create new task
+      parameters:
+        - name: milestone_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+      responses:
+        '201':
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+
+  /tasks/{id}:
+    get:
+      tags:
+        - Tasks
+      summary: Get task by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+    put:
+      tags:
+        - Tasks
+      summary: Update task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+      responses:
+        '200':
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+    delete:
+      tags:
+        - Tasks
+      summary: Delete task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Task deleted
+
+  /tasks/{id}/assign:
+    post:
+      tags:
+        - Tasks
+      summary: Assign resource to task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resource_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Task assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+
+  # ==================== TIMESHEETS ====================
+  /timesheets:
+    get:
+      tags:
+        - Timesheets
+      summary: List timesheets
+      parameters:
+        - name: task_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: resource_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: logged_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: List of timesheets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Timesheet'
+    post:
+      tags:
+        - Timesheets
+      summary: Create timesheet entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimesheetCreate'
+      responses:
+        '201':
+          description: Timesheet created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timesheet'
+
+  /timesheets/{id}:
+    get:
+      tags:
+        - Timesheets
+      summary: Get timesheet by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Timesheet details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timesheet'
+    put:
+      tags:
+        - Timesheets
+      summary: Update timesheet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimesheetCreate'
+      responses:
+        '200':
+          description: Timesheet updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timesheet'
+    delete:
+      tags:
+        - Timesheets
+      summary: Delete timesheet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Timesheet deleted
+
+  /timesheets/start-timer:
+    post:
+      tags:
+        - Timesheets
+      summary: Start timer for task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task_id:
+                  type: string
+                  format: uuid
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Timer started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timesheet'
+
+  /timesheets/stop-timer:
+    post:
+      tags:
+        - Timesheets
+      summary: Stop active timer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                timesheet_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Timer stopped
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timesheet'
+
+  # ==================== ISSUES ====================
+  /projects/{project_id}/issues:
+    get:
+      tags:
+        - Issues
+      summary: List issues for project
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [Open, In-Progress, Resolved, Closed]
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: [High, Medium, Low]
+      responses:
+        '200':
+          description: List of issues
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Issue'
+    post:
+      tags:
+        - Issues
+      summary: Create new issue
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueCreate'
+      responses:
+        '201':
+          description: Issue created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+
+  /issues/{id}:
+    get:
+      tags:
+        - Issues
+      summary: Get issue by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Issue details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+    put:
+      tags:
+        - Issues
+      summary: Update issue
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueCreate'
+      responses:
+        '200':
+          description: Issue updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+    delete:
+      tags:
+        - Issues
+      summary: Delete issue
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Issue deleted
+
+  # ==================== INVOICES ====================
+  /invoices:
+    get:
+      tags:
+        - Invoices
+      summary: List all invoices
+      parameters:
+        - name: project_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [Draft, Sent, Unpaid, Overdue, Paid]
+      responses:
+        '200':
+          description: List of invoices
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Invoice'
+    post:
+      tags:
+        - Invoices
+      summary: Create new invoice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceCreate'
+      responses:
+        '201':
+          description: Invoice created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+
+  /invoices/{id}:
+    get:
+      tags:
+        - Invoices
+      summary: Get invoice by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Invoice details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+    put:
+      tags:
+        - Invoices
+      summary: Update invoice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceCreate'
+      responses:
+        '200':
+          description: Invoice updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+    delete:
+      tags:
+        - Invoices
+      summary: Delete invoice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Invoice deleted
+
+  /invoices/{id}/send:
+    post:
+      tags:
+        - Invoices
+      summary: Send invoice to client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Invoice sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+
+  /invoices/{id}/mark-paid:
+    post:
+      tags:
+        - Invoices
+      summary: Mark invoice as paid
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paid_date:
+                  type: string
+                  format: date
+                payment_method:
+                  type: string
+      responses:
+        '200':
+          description: Invoice marked as paid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+
+  # ==================== EXPENSES ====================
+  /projects/{project_id}/expenses:
+    get:
+      tags:
+        - Expenses
+      summary: List expenses for project
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of expenses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Expense'
+    post:
+      tags:
+        - Expenses
+      summary: Create new expense
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpenseCreate'
+      responses:
+        '201':
+          description: Expense created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+
+  /expenses/{id}:
+    get:
+      tags:
+        - Expenses
+      summary: Get expense by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Expense details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+    put:
+      tags:
+        - Expenses
+      summary: Update expense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpenseCreate'
+      responses:
+        '200':
+          description: Expense updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+    delete:
+      tags:
+        - Expenses
+      summary: Delete expense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Expense deleted
+
+  # ==================== DASHBOARD ====================
+  /dashboard/overview:
+    get:
+      tags:
+        - Dashboard
+      summary: Get dashboard overview
+      responses:
+        '200':
+          description: Dashboard overview
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_projects:
+                    type: integer
+                  active_projects:
+                    type: integer
+                  total_clients:
+                    type: integer
+                  pending_invoices:
+                    type: integer
+                  total_revenue:
+                    type: number
+                    format: float
+                  total_expenses:
+                    type: number
+                    format: float
+
+  /dashboard/project/{project_id}/analytics:
+    get:
+      tags:
+        - Dashboard
+      summary: Get project analytics
+      description: Burn rate analysis and early warning system
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Project analytics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project_id:
+                    type: string
+                    format: uuid
+                  budget:
+                    type: number
+                    format: float
+                  actual_cost:
+                    type: number
+                    format: float
+                  burn_rate_percentage:
+                    type: number
+                    format: float
+                  progress_percentage:
+                    type: number
+                    format: float
+                  is_over_budget:
+                    type: boolean
+                  warning_level:
+                    type: string
+                    enum: [Normal, Warning, Critical]
+                  estimated_completion_date:
+                    type: string
+                    format: date
+                  issue_hours_logged:
+                    type: number
+                    format: float
+
+# ==================== COMPONENTS ====================
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+
+    Service:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          example: SRV-01
+        name:
+          type: string
+          example: Web App Development
+        billing_method:
+          type: string
+          enum: [Hourly, Fixed, Retainer]
+        base_rate:
+          type: number
+          format: float
+        created_at:
+          type: string
+          format: date-time
+
+    ServiceCreate:
+      type: object
+      required:
+        - code
+        - name
+        - billing_method
+        - base_rate
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        billing_method:
+          type: string
+          enum: [Hourly, Fixed, Retainer]
+        base_rate:
+          type: number
+          format: float
+
+    Resource:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        role:
+          type: string
+          enum: [PM, Backend, Frontend, UI, UX, QA]
+        man_day_rate:
+          type: number
+          format: float
+        hourly_cost:
+          type: number
+          format: float
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    ResourceCreate:
+      type: object
+      required:
+        - name
+        - role
+        - man_day_rate
+        - hourly_cost
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+          enum: [PM, Backend, Frontend, UI, UX, QA]
+        man_day_rate:
+          type: number
+          format: float
+        hourly_cost:
+          type: number
+          format: float
+        is_active:
+          type: boolean
+          default: true
+
+    Client:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        company_name:
+          type: string
+        pic_name:
+          type: string
+        pic_email:
+          type: string
+          format: email
+        pic_phone:
+          type: string
+        address:
+          type: string
+        status:
+          type: string
+          enum: [Lead, Active, Inactive]
+        created_at:
+          type: string
+          format: date-time
+
+    ClientCreate:
+      type: object
+      required:
+        - company_name
+        - pic_name
+        - pic_email
+      properties:
+        company_name:
+          type: string
+        pic_name:
+          type: string
+        pic_email:
+          type: string
+          format: email
+        pic_phone:
+          type: string
+        address:
+          type: string
+        status:
+          type: string
+          enum: [Lead, Active, Inactive]
+          default: Lead
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        client_id:
+          type: string
+          format: uuid
+        project_code:
+          type: string
+          example: PRJ-2026-001
+        name:
+          type: string
+        description:
+          type: string
+        complexity:
+          type: string
+          enum: [Low, Medium, High]
+        complexity_score:
+          type: number
+          format: float
+        total_budget:
+          type: number
+          format: float
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [Draft, In Progress, On Hold, UAT, Completed, Cancelled]
+        created_at:
+          type: string
+          format: date-time
+        client:
+          $ref: '#/components/schemas/Client'
+
+    ProjectCreate:
+      type: object
+      required:
+        - client_id
+        - name
+        - start_date
+        - end_date
+      properties:
+        client_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        total_budget:
+          type: number
+          format: float
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [Draft, In Progress, On Hold, UAT, Completed, Cancelled]
+          default: Draft
+
+    Milestone:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        project_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        sequence_order:
+          type: integer
+        percentage_weight:
+          type: number
+          format: float
+        budget_amount:
+          type: number
+          format: float
+        target_date:
+          type: string
+          format: date
+        is_completed:
+          type: boolean
+        completed_date:
+          type: string
+          format: date
+        created_at:
+          type: string
+          format: date-time
+
+    MilestoneCreate:
+      type: object
+      required:
+        - title
+        - sequence_order
+        - percentage_weight
+        - target_date
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        sequence_order:
+          type: integer
+        percentage_weight:
+          type: number
+          format: float
+        budget_amount:
+          type: number
+          format: float
+        target_date:
+          type: string
+          format: date
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        milestone_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+          enum: [High, Medium, Low]
+        status:
+          type: string
+          enum: [To-Do, In-Progress, In-Review, Done]
+        estimated_hours:
+          type: number
+          format: float
+        start_date:
+          type: string
+          format: date
+        due_date:
+          type: string
+          format: date
+        dependency_task_id:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        assigned_resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/Resource'
+
+    TaskCreate:
+      type: object
+      required:
+        - title
+        - priority
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+          enum: [High, Medium, Low]
+        estimated_hours:
+          type: number
+          format: float
+        start_date:
+          type: string
+          format: date
+        due_date:
+          type: string
+          format: date
+        dependency_task_id:
+          type: string
+          format: uuid
+          nullable: true
+
+    Timesheet:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        task_id:
+          type: string
+          format: uuid
+        resource_id:
+          type: string
+          format: uuid
+        description:
+          type: string
+        duration_hours:
+          type: number
+          format: float
+        logged_date:
+          type: string
+          format: date
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        entry_type:
+          type: string
+          enum: [Manual, Timer]
+        created_at:
+          type: string
+          format: date-time
+        task:
+          $ref: '#/components/schemas/Task'
+        resource:
+          $ref: '#/components/schemas/Resource'
+
+    TimesheetCreate:
+      type: object
+      required:
+        - task_id
+        - resource_id
+        - description
+        - duration_hours
+        - logged_date
+      properties:
+        task_id:
+          type: string
+          format: uuid
+        resource_id:
+          type: string
+          format: uuid
+        description:
+          type: string
+        duration_hours:
+          type: number
+          format: float
+        logged_date:
+          type: string
+          format: date
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        entry_type:
+          type: string
+          enum: [Manual, Timer]
+          default: Manual
+
+    Issue:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        project_id:
+          type: string
+          format: uuid
+        task_id:
+          type: string
+          format: uuid
+          nullable: true
+        reported_by:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+          enum: [High, Medium, Low]
+        status:
+          type: string
+          enum: [Open, In-Progress, Resolved, Closed]
+        reported_date:
+          type: string
+          format: date
+        resolved_date:
+          type: string
+          format: date
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    IssueCreate:
+      type: object
+      required:
+        - title
+        - priority
+      properties:
+        task_id:
+          type: string
+          format: uuid
+          nullable: true
+        reported_by:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+          enum: [High, Medium, Low]
+        status:
+          type: string
+          enum: [Open, In-Progress, Resolved, Closed]
+          default: Open
+
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        project_id:
+          type: string
+          format: uuid
+        milestone_id:
+          type: string
+          format: uuid
+          nullable: true
+        invoice_number:
+          type: string
+        amount:
+          type: number
+          format: float
+        status:
+          type: string
+          enum: [Draft, Sent, Unpaid, Overdue, Paid]
+        invoice_date:
+          type: string
+          format: date
+        due_date:
+          type: string
+          format: date
+        paid_date:
+          type: string
+          format: date
+          nullable: true
+        notes:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        project:
+          $ref: '#/components/schemas/Project'
+        client:
+          $ref: '#/components/schemas/Client'
+
+    InvoiceCreate:
+      type: object
+      required:
+        - project_id
+        - amount
+        - due_date
+      properties:
+        project_id:
+          type: string
+          format: uuid
+        milestone_id:
+          type: string
+          format: uuid
+          nullable: true
+        amount:
+          type: number
+          format: float
+        due_date:
+          type: string
+          format: date
+        notes:
+          type: string
+
+    Expense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        project_id:
+          type: string
+          format: uuid
+        category:
+          type: string
+          example: Cloud
+        vendor:
+          type: string
+        amount:
+          type: number
+          format: float
+        expense_date:
+          type: string
+          format: date
+        description:
+          type: string
+        receipt_url:
+          type: string
+          format: uri
+        created_at:
+          type: string
+          format: date-time
+
+    ExpenseCreate:
+      type: object
+      required:
+        - category
+        - vendor
+        - amount
+        - expense_date
+      properties:
+        category:
+          type: string
+        vendor:
+          type: string
+        amount:
+          type: number
+          format: float
+        expense_date:
+          type: string
+          format: date
+        description:
+          type: string
+        receipt_url:
+          type: string
+          format: uri
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        details:
+          type: string
